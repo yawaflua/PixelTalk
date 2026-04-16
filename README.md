@@ -1,4 +1,4 @@
-# PixelTalk
+# PixelTalk - Hackaton project
 
 PixelTalk is a comprehensive socialization plugin for Minecraft teenagers, designed to encourage friendly interactions and maintain a healthy, moderated environment.
 

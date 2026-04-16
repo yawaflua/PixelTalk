@@ -1,8 +1,12 @@
 name: PixelTalk
 version: '${version}'
+description: Socialization plugin for teenagers
 
 main: git.yawaflua.tech.pixeltalk
 bootstrapper: git.yawaflua.tech.pixeltalkBootstrap
 loader: git.yawaflua.tech.pixeltalkLoader
-api-version: '1.21.11'
+api-version: '1.21.10'
 load: POSTWORLD
+
+softdepend:
+  - PlasmoVoice

@@ -1,0 +1,101 @@
+# PixelTalk Configuration
+database:
+  host: witteringgray
+  port: 27017
+  database: pixeltalk
+  # Опционально: аутентификация
+  # username: ""
+  # password: ""
+
+scores:
+  chat-message: 0.5
+  voice-chat-near-player-per-20s: 1.0
+  voice-chat-near-distance: 30.0
+  pvp-hit: -0.5
+  profanity-chat: -0.5
+  min-score: 0.0
+
+pvp:
+  cooldown-seconds: 5
+
+report:
+  cooldown-seconds: 60
+
+profanity:
+  words:
+    # Русский
+    - "блять"
+    - "сука"
+    - "пиздец"
+    - "хуй"
+    - "ебать"
+    - "ёбаный"
+    - "нахуй"
+    - "пизда"
+    - "залупа"
+    - "мудак"
+    - "дерьмо"
+    # English
+    - "fuck"
+    - "shit"
+    - "bitch"
+    - "ass"
+    - "dick"
+    - "bastard"
+    - "damn"
+    - "cunt"
+    # Иврит (транслитерация)
+    - "зонА"
+    - "бен зона"
+    - "кус эмек"
+    - "косэмек"
+    - "cosemmek"
+    - "кусэмек"
+    - "лех лазазэль"
+    - "бен шармута"
+    - "маньяк"
+    - "zona"
+    - "ben zona"
+    - "kus emek"
+    - "kos emek"
+    - "leh laazazel"
+    - "ben sharmuta"
+    # Арабский (транслитерация)
+    - "шармута"
+    - "sharmuta"
+    - "sharmouta"
+    - "кальб"
+    - "kalb"
+    - "ибн эль шармута"
+    - "ibn el sharmuta"
+    - "хара"
+    - "khara"
+    - "яхраб бейтак"
+    - "ya5rab beytak"
+    - "телхас тизи"
+    - "telhas tizi"
+    - "кос омак"
+    - "kos ommak"
+    - "кос омок"
+    - "kos ommok"
+    - "аири фик"
+    - "airi feek"
+    - "ахра"
+    - "ybn el sharmouta"
+    # Иврит (оригинал)
+    - "זונה"
+    - "בן זונה"
+    - "כוס אמק"
+    - "לך לעזאזל"
+    - "בן שרמוטה"
+    - "מניאק"
+    - "זדיין"
+    - "זיין"
+    # Арабский (оригинал)
+    - "شرموطة"
+    - "كلب"
+    - "ابن الشرموطة"
+    - "خرا"
+    - "يخرب بيتك"
+    - "كس أمك"
+    - "عيري فيك"

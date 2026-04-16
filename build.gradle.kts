@@ -6,21 +6,29 @@ plugins {
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://repo.plasmoverse.com/releases")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
+    // MongoDB driver (will be loaded at runtime via PluginLoader)
+    compileOnly("org.mongodb:mongodb-driver-sync:5.0.1")
+    
+    // PlasmoVoice API (optional)
+    compileOnly("su.plo.voice.api:server:2.1.8")
 }
 
 java {
-    toolchain.languageVersion = JavaLanguageVersion.of(21)
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+tasks.withType<JavaCompile> {
+    options.release.set(21)
 }
 
 tasks {
     runServer {
-        // Configure the Minecraft version for our task.
-        // This is the only required configuration besides applying the plugin.
-        // Your plugin's jar (or shadowJar if present) will be used automatically.
         minecraftVersion("1.21.11")
         jvmArgs("-Xms2G", "-Xmx2G")
     }

@@ -44,10 +44,12 @@ public class PvPListener implements Listener {
                 String warnMsg = Messages.PVP_WARNING.replace("<amount>", String.valueOf(damage));
                 damager.sendMessage(Messages.parse(warnMsg));
 
-                damager.sendActionBar(Messages.parse(Messages.POINTS_REMOVED.replace("<amount>", String.valueOf(damage))));
+                damager.sendActionBar(
+                        Messages.parse(Messages.POINTS_REMOVED.replace("<amount>", String.valueOf(damage))));
 
-                if (scoreManager.getPlayerData(damagerId).getPoints() <= 0){
-                    damager.ban(Messages.parse(Messages.PVP_BAN).toString(), Date.from(Instant.now().plus(7, ChronoUnit.DAYS)), "PvP points reached 0");
+                if (scoreManager.getPlayerData(damagerId).getPoints() <= 0) {
+                    damager.ban(Messages.PVP_BAN, Date.from(Instant.now().plus(7, ChronoUnit.DAYS)),
+                            "PvP points reached 0");
                 }
             }
         }

@@ -1,0 +1,8 @@
+name: PixelTalk
+version: '${version}'
+
+main: git.yawaflua.tech.pixeltalk
+bootstrapper: git.yawaflua.tech.pixeltalkBootstrap
+loader: git.yawaflua.tech.pixeltalkLoader
+api-version: '1.21.11'
+load: POSTWORLD

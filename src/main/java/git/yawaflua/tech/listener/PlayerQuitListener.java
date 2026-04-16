@@ -15,7 +15,6 @@ public class PlayerQuitListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        // Save to DB and remove from cache
         scoreManager.unloadPlayer(event.getPlayer().getUniqueId());
     }
 }

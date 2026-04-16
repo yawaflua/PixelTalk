@@ -30,7 +30,6 @@ public class VoiceIntegration {
     private final Plugin plugin;
     private final Logger logger;
     
-    // UUID -> Ticks speaking
     private final Map<UUID, Integer> speakingTime = new HashMap<>();
 
     public VoiceIntegration(Plugin plugin, ScoreManager scoreManager, FileConfiguration config) {

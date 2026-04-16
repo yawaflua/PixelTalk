@@ -24,7 +24,6 @@ public final class pixeltalk extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
 
-        // 1. Initialize Database
         try {
             databaseManager = new DatabaseManager(getLogger(), getConfig());
         } catch (Exception e) {
@@ -34,13 +33,11 @@ public final class pixeltalk extends JavaPlugin {
             return;
         }
 
-        // 2. Initialize Managers
         scoreManager = new ScoreManager(databaseManager, getConfig());
         QuestionnaireManager questionnaireManager = new QuestionnaireManager(databaseManager);
         TabManager tabManager = new TabManager(this, scoreManager);
         ProfanityFilter profanityFilter = new ProfanityFilter(getConfig());
 
-        // 3. Optional Voice Integration
         if (Bukkit.getPluginManager().isPluginEnabled("PlasmoVoice")) {
             getLogger().info("PlasmoVoice found! Enabling voice integration.");
             try {
@@ -51,13 +48,11 @@ public final class pixeltalk extends JavaPlugin {
             }
         }
 
-        // 4. Register Listeners
         getServer().getPluginManager().registerEvents(new ChatListener(scoreManager, questionnaireManager, profanityFilter, getConfig()), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(scoreManager, questionnaireManager, tabManager), this);
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(scoreManager), this);
         getServer().getPluginManager().registerEvents(new PvPListener(scoreManager, getConfig()), this);
 
-        // 5. Register Commands
         this.getLifecycleManager().registerEventHandler(io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents.COMMANDS, event -> {
             event.registrar().register("report", new ReportCommand(databaseManager, getConfig(), voiceIntegration));
         });

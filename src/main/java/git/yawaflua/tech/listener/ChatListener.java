@@ -41,7 +41,6 @@ public class ChatListener implements Listener {
         
         String plainMessage = PlainTextComponentSerializer.plainText().serialize(event.message());
 
-        // Check if answering questionnaire
         if (questionnaireManager.isAnswering(uuid)) {
             event.setCancelled(true);
             PlayerData data = scoreManager.getPlayerData(uuid);

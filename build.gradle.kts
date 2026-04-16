@@ -11,10 +11,8 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
-    // MongoDB driver (will be loaded at runtime via PluginLoader)
     compileOnly("org.mongodb:mongodb-driver-sync:5.0.1")
     
-    // PlasmoVoice API (optional)
     compileOnly("su.plo.voice.api:server:2.1.8")
 }
 

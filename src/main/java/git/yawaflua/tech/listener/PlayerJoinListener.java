@@ -28,16 +28,13 @@ public class PlayerJoinListener implements Listener {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
-        // 1. Load player data into cache
         scoreManager.loadPlayer(uuid);
         
-        // 2. Check registration status
         PlayerData data = scoreManager.getPlayerData(uuid);
         if (data != null && !data.isRegistered()) {
             questionnaireManager.startQuestionnaire(player);
         }
 
-        // 3. Update their tab
         tabManager.updatePlayerTab(player);
     }
 }

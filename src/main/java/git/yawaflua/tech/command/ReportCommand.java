@@ -66,7 +66,6 @@ public class ReportCommand implements BasicCommand {
         }
         String reason = reasonBuilder.toString().trim();
 
-        // Log report
         databaseManager.logReport(uuid, target.getUniqueId(), reason);
         cooldowns.put(uuid, now);
         
@@ -74,7 +73,6 @@ public class ReportCommand implements BasicCommand {
             voiceIntegration.dumpAudio(target.getUniqueId(), reason);
         }
 
-        // Notify OPs
         String opMsg = Messages.REPORT_NOTIFICATION_OP
                 .replace("<reporter>", player.getName())
                 .replace("<target>", target.getName())

@@ -18,8 +18,6 @@ public class ProfanityFilter {
         
         String lowerCaseMsg = message.toLowerCase();
         
-        // Simple word checking.
-        // For a more advanced filter, regex boundaries should be used.
         for (String word : badWords) {
             if (lowerCaseMsg.contains(word.toLowerCase())) {
                 return true;
@@ -33,7 +31,6 @@ public class ProfanityFilter {
         
         String censored = message;
         for (String word : badWords) {
-            // Case-insensitive replacement
             censored = Pattern.compile(Pattern.quote(word), Pattern.CASE_INSENSITIVE).matcher(censored).replaceAll("***");
         }
         return censored;

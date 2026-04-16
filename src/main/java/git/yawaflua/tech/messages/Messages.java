@@ -43,4 +43,10 @@ public class Messages {
         public static final String REPORT_COOLDOWN = PREFIX
                         + "<red>Wait <time> sec. before sending another report.</red>";
         public static final String REPORT_NOTIFICATION_OP = "<red>[REPORT]</red> <yellow><reporter></yellow> reported <yellow><target></yellow>. Reason: <gray><reason></gray>";
+
+        public static final String WEB_AUTH_SUCCESS = PREFIX + "<green>Website authentication successful!</green>";
+        public static final String WEB_AUTH_FAILED = PREFIX + "<red>Invalid or already used authentication code.</red>";
+        public static final String WEB_AUTH_USAGE = PREFIX + "<yellow>Usage: /pt web auth <code></yellow>";
+
+        public static final String ITEM_SHARE_REWARD = PREFIX + "<green>+<amount> points for sharing <item> with <player>!</green>";
 }

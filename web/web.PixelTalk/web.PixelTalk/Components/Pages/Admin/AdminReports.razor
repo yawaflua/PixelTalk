@@ -1,0 +1,112 @@
+@page "/admin/reports"
+@attribute [Authorize(Roles = "op")]
+@using Microsoft.AspNetCore.Authorization
+@using MongoDB.Driver
+@using web.PixelTalk.Models
+@using web.PixelTalk.Services
+@inject MongoService MongoService
+
+<PageTitle>Manage Reports</PageTitle>
+
+<div class="container mt-4">
+    <h2>Player Reports</h2>
+    <div class="table-responsive mt-3">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Reporter</th>
+                    <th>Target</th>
+                    <th>Reason</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var report in reports)
+                {
+                    <tr>
+                        <td><code>@report.ReporterUuid</code></td>
+                        <td><code>@report.TargetUuid</code></td>
+                        <td>@report.Reason</td>
+                        <td>@(DateTimeOffset.FromUnixTimeMilliseconds(report.Timestamp).ToString("g"))</td>
+                        <td>
+                            @if (report.Resolved)
+                            {
+                                <span class="badge bg-success">Resolved</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            }
+                        </td>
+                        <td>
+                            @if (!report.Resolved)
+                            {
+                                <button class="btn btn-sm btn-primary" @onclick="() => RunSolve(report)">Resolve</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <button class="btn btn-outline-secondary" @onclick="PreviousPage" disabled="@(currentPage == 1)">Previous</button>
+        <span>Page @currentPage of @totalPages</span>
+        <button class="btn btn-outline-secondary" @onclick="NextPage" disabled="@(currentPage == totalPages)">Next</button>
+    </div>
+</div>
+
+@code {
+    private List<Report> reports = new();
+    private int currentPage = 1;
+    private int pageSize = 10;
+    private long totalItems;
+    private int totalPages => (int)Math.Max(1, Math.Ceiling((double)totalItems / pageSize));
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        var filter = Builders<Report>.Filter.Empty;
+        totalItems = await MongoService.Reports.CountDocumentsAsync(filter);
+        
+        reports = await MongoService.Reports.Find(filter)
+            .SortByDescending(r => r.Timestamp)
+            .Skip((currentPage - 1) * pageSize)
+            .Limit(pageSize)
+            .ToListAsync();
+    }
+
+    private async Task RunSolve(Report report)
+    {
+        var filter = Builders<Report>.Filter.Eq(r => r.Id, report.Id);
+        var update = Builders<Report>.Update.Set(r => r.Resolved, true);
+        await MongoService.Reports.UpdateOneAsync(filter, update);
+        report.Resolved = true;
+    }
+
+    private async Task NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            await LoadData();
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            await LoadData();
+        }
+    }
+}
+

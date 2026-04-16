@@ -1,0 +1,100 @@
+@page "/admin/purchases"
+@attribute [Authorize(Roles = "op")]
+@using Microsoft.AspNetCore.Authorization
+@using MongoDB.Driver
+@using web.PixelTalk.Models
+@using web.PixelTalk.Services
+@inject MongoService MongoService
+
+<PageTitle>Manage Purchases</PageTitle>
+
+<div class="container mt-4">
+    <h2>Player Purchase History</h2>
+    <div class="table-responsive mt-3 shadow-sm rounded">
+        <table class="table table-hover table-striped align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Player UUID</th>
+                    <th>Item Redeemed</th>
+                    <th>Points Cost</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in logs)
+                {
+                    <tr>
+                        <td class="text-muted small">@(DateTimeOffset.FromUnixTimeSeconds(p.Timestamp).ToString("g"))</td>
+                        <td><code>@p.Uuid</code></td>
+                        <td class="fw-semibold text-primary">@p.ItemName</td>
+                        <td><span class="badge bg-danger rounded-pill">-@p.Cost.ToString("N0")</span></td>
+                    </tr>
+                }
+
+                @if (!logs.Any())
+                {
+                    <tr>
+                        <td colspan="4" class="text-center py-5 text-muted fst-italic">No purchase records found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (totalPages > 1)
+    {
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <button class="btn btn-outline-primary px-4" @onclick="PreviousPage" disabled="@(currentPage == 1)">
+                &laquo; Previous
+            </button>
+            <span class="text-muted fw-bold">Page <span class="text-dark">@currentPage</span> of <span class="text-dark">@totalPages</span></span>
+            <button class="btn btn-outline-primary px-4" @onclick="NextPage" disabled="@(currentPage == totalPages)">
+                Next &raquo;
+            </button>
+        </div>
+    }
+</div>
+
+@code {
+    private List<PurchaseLog> logs = new();
+    private int currentPage = 1;
+    private int pageSize = 15;
+    private long totalItems;
+    private int totalPages => (int)Math.Max(1, Math.Ceiling((double)totalItems / pageSize));
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        var filter = Builders<PurchaseLog>.Filter.Empty;
+        totalItems = await MongoService.PurchaseLogs.CountDocumentsAsync(filter);
+        
+        logs = await MongoService.PurchaseLogs.Find(filter)
+            .SortByDescending(r => r.Timestamp)
+            .Skip((currentPage - 1) * pageSize)
+            .Limit(pageSize)
+            .ToListAsync();
+    }
+
+    private async Task NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            await LoadData();
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            await LoadData();
+        }
+    }
+}
+

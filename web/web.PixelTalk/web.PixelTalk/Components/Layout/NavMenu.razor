@@ -1,0 +1,40 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">web.PixelTalk</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler"/>
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="nav flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+
+        <AuthorizeView Roles="op">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="admin/reports">
+                        <span class="bi bi-exclamation-triangle-fill" aria-hidden="true"></span> Manage Reports
+                    </NavLink>
+                </div>
+                
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="admin/store">
+                        <span class="bi bi-shop" aria-hidden="true"></span> Manage Store
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="admin/purchases">
+                        <span class="bi bi-receipt" aria-hidden="true"></span> Purchase Log
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+    </nav>
+</div>

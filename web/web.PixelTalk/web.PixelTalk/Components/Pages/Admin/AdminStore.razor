@@ -1,0 +1,107 @@
+@page "/admin/store"
+@attribute [Authorize(Roles = "op")]
+@using Microsoft.AspNetCore.Authorization
+@using MongoDB.Driver
+@using web.PixelTalk.Models
+@using web.PixelTalk.Services
+@inject MongoService MongoService
+
+<PageTitle>Manage Store</PageTitle>
+
+<div class="container mt-4">
+    <h2>Store Inventory</h2>
+    
+    <div class="row mt-4">
+        <!-- New Item Form -->
+        <div class="col-md-5 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">Add New Item</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" @bind="newItem.Name" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" rows="3" @bind="newItem.Description"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cost (Points)</label>
+                        <input type="number" class="form-control" @bind="newItem.Cost" />
+                    </div>
+                    <button class="btn btn-success w-100" @onclick="AddItem">Add to Store</button>
+                    @if (errorMessage != null)
+                    {
+                        <div class="alert alert-danger mt-3">@errorMessage</div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Items List -->
+        <div class="col-md-7">
+            <div class="list-group shadow-sm">
+                @foreach (var item in items)
+                {
+                    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-start py-3">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">@item.Name</div>
+                            <small class="text-muted d-block mt-1">@item.Description</small>
+                            <span class="badge bg-secondary mt-2">@item.Cost.ToString("N0") pts</span>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger ms-3 mt-1" @onclick="() => DeleteItem(item)">
+                            Delete
+                        </button>
+                    </div>
+                }
+                
+                @if (!items.Any())
+                {
+                    <div class="list-group-item text-center py-4 text-muted">
+                        No items found in the store. Add some using the form!
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<StoreItem> items = new();
+    private StoreItem newItem = new();
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        items = await MongoService.StoreItems.Find(_ => true).ToListAsync();
+    }
+
+    private async Task AddItem()
+    {
+        errorMessage = null;
+
+        if (string.IsNullOrWhiteSpace(newItem.Name) || newItem.Cost < 0)
+        {
+            errorMessage = "Please verify item details. Name is required and Cost cannot be negative.";
+            return;
+        }
+
+        await MongoService.StoreItems.InsertOneAsync(newItem);
+        items.Add(newItem);
+        
+        newItem = new StoreItem();
+    }
+
+    private async Task DeleteItem(StoreItem item)
+    {
+        var filter = Builders<StoreItem>.Filter.Eq(i => i.Id, item.Id);
+        await MongoService.StoreItems.DeleteOneAsync(filter);
+        items.Remove(item);
+    }
+}
+

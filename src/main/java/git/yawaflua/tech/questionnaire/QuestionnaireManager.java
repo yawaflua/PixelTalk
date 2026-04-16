@@ -41,7 +41,8 @@ public class QuestionnaireManager {
 
     public void handleAnswer(Player player, String answer, PlayerData playerData) {
         QuestionnaireState state = activeQuestionnaires.get(player.getUniqueId());
-        if (state == null) return;
+        if (state == null)
+            return;
 
         switch (state.currentState) {
             case LANGUAGE:
@@ -61,6 +62,7 @@ public class QuestionnaireManager {
                         playerData.setAge(age);
                         playerData.setRegistered(true);
                         activeQuestionnaires.remove(player.getUniqueId());
+                        playerData.setName(player.getName());
                         databaseManager.savePlayer(playerData);
                         player.sendMessage(Messages.parse(Messages.REGISTRATION_COMPLETE));
                     } else {

@@ -1,9 +1,11 @@
 package git.yawaflua.tech;
 
+import git.yawaflua.tech.command.PtCommand;
 import git.yawaflua.tech.command.ReportCommand;
 import git.yawaflua.tech.database.DatabaseManager;
 import git.yawaflua.tech.filter.ProfanityFilter;
 import git.yawaflua.tech.listener.ChatListener;
+import git.yawaflua.tech.listener.ItemShareListener;
 import git.yawaflua.tech.listener.PlayerJoinListener;
 import git.yawaflua.tech.listener.PlayerQuitListener;
 import git.yawaflua.tech.listener.PvPListener;
@@ -52,9 +54,11 @@ public final class pixeltalk extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(scoreManager, questionnaireManager, tabManager), this);
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(scoreManager), this);
         getServer().getPluginManager().registerEvents(new PvPListener(scoreManager, getConfig()), this);
+        getServer().getPluginManager().registerEvents(new ItemShareListener(scoreManager, getConfig()), this);
 
         this.getLifecycleManager().registerEventHandler(io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents.COMMANDS, event -> {
             event.registrar().register("report", new ReportCommand(databaseManager, getConfig(), voiceIntegration));
+            event.registrar().register("pt", new PtCommand(databaseManager));
         });
 
         getLogger().info("PixelTalk enabled successfully!");

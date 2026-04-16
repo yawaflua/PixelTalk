@@ -99,3 +99,26 @@ profanity:
     - "يخرب بيتك"
     - "كس أمك"
     - "عيري فيك"
+
+# Sharing valuable resources
+sharing:
+  # Points awarded for sharing valuable items with other players
+  points-per-share: 3.0
+  # Cooldown in seconds between share rewards (per player pair)
+  cooldown-seconds: 300
+  # List of valuable items (Minecraft material names)
+  valuable-items:
+    - DIAMOND
+    - DIAMOND_BLOCK
+    - EMERALD
+    - EMERALD_BLOCK
+    - NETHERITE_INGOT
+    - NETHERITE_BLOCK
+    - GOLDEN_APPLE
+    - ENCHANTED_GOLDEN_APPLE
+    - ELYTRA
+    - TOTEM_OF_UNDYING
+    - BEACON
+    - NETHER_STAR
+    - TRIDENT
+    - SHULKER_BOX

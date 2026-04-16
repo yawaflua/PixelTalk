@@ -6,6 +6,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
+import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
 import git.yawaflua.tech.model.PlayerData;
 import org.bson.Document;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -20,6 +22,7 @@ public class DatabaseManager {
     private MongoDatabase database;
     private MongoCollection<Document> playersCollection;
     private MongoCollection<Document> reportsCollection;
+    private MongoCollection<Document> webAuthCollection;
 
     public DatabaseManager(Logger logger, FileConfiguration config) {
         this.logger = logger;
@@ -30,7 +33,7 @@ public class DatabaseManager {
         String host = config.getString("database.host", "localhost");
         int port = config.getInt("database.port", 27017);
         String dbName = config.getString("database.database", "pixeltalk");
-        
+
         String username = config.getString("database.username", "");
         String password = config.getString("database.password", "");
 
@@ -44,6 +47,7 @@ public class DatabaseManager {
         database = mongoClient.getDatabase(dbName);
         playersCollection = database.getCollection("players");
         reportsCollection = database.getCollection("reports");
+        webAuthCollection = database.getCollection("auth_requests");
 
         logger.info("Connected to MongoDB -> " + dbName);
     }
@@ -69,8 +73,7 @@ public class DatabaseManager {
                 doc.getInteger("age", 0),
                 doc.getDouble("points"),
                 doc.getBoolean("registered", false),
-                doc.getLong("firstJoin")
-        );
+                doc.getLong("firstJoin"));
     }
 
     public void savePlayer(PlayerData player) {
@@ -86,8 +89,7 @@ public class DatabaseManager {
         playersCollection.replaceOne(
                 Filters.eq("uuid", player.getUuid().toString()),
                 doc,
-                new ReplaceOptions().upsert(true)
-        );
+                new ReplaceOptions().upsert(true));
     }
 
     public void logReport(UUID reporter, UUID target, String reason) {
@@ -97,5 +99,16 @@ public class DatabaseManager {
                 .append("timestamp", System.currentTimeMillis())
                 .append("resolved", false);
         reportsCollection.insertOne(report);
+    }
+
+    public boolean resolveWebAuth(String code, UUID playerUuid) {
+        UpdateResult result = webAuthCollection.updateOne(
+                Filters.and(
+                        Filters.eq("code", code),
+                        Filters.eq("resolved", false)),
+                Updates.combine(
+                        Updates.set("uuid", playerUuid.toString()),
+                        Updates.set("resolved", true)));
+        return result.getModifiedCount() > 0;
     }
 }

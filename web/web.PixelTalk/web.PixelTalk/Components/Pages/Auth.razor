@@ -1,0 +1,81 @@
+@page "/auth"
+@inject NavigationManager NavManager
+@inject web.PixelTalk.Services.MongoService MongoService
+@using System.Timers
+@using MongoDB.Driver
+@implements IDisposable
+
+<PageTitle>PixelTalk Authentication</PageTitle>
+
+<div class="row min-vh-100 justify-content-center align-items-center">
+    <div class="col-md-6 text-center">
+        @if (isLoading)
+        {
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Generating authorization code...</p>
+        }
+        else
+        {
+            <div class="card shadow-lg p-5">
+                <h2 class="mb-4">Link Your Minecraft Account</h2>
+                <p>Run the following command in-game on the server to log in:</p>
+                <h3 class="font-monospace user-select-all bg-light p-3 border rounded text-primary">/pt web auth @authCode</h3>
+                <p class="text-muted mt-3">Waiting for authentication... This page will redirect automatically.</p>
+                <button class="btn btn-outline-secondary mt-3" @onclick="CheckAuthStatus">Check Now</button>
+                <div class="spinner-grow text-primary mt-2" role="status">
+                    <span class="visually-hidden">Refreshing...</span>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private string authCode = string.Empty;
+    private bool isLoading = true;
+    private Timer? timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        authCode = GenerateCode();
+        
+        var req = new web.PixelTalk.Models.AuthRequest
+        {
+            Code = authCode,
+            Resolved = false,
+            Timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+        };
+        await MongoService.AuthRequests.InsertOneAsync(req);
+        
+        isLoading = false;
+        
+        timer = new Timer(1500);
+        timer.Elapsed += async (sender, e) => await CheckAuthStatus();
+        timer.Start();
+    }
+
+    private async Task CheckAuthStatus()
+    {
+        var req = await MongoService.AuthRequests.Find(r => r.Code == authCode).FirstOrDefaultAsync();
+        Console.WriteLine(req == null);
+        if (req != null && req.Resolved)
+        {
+            timer?.Stop();
+            NavManager.NavigateTo($"/login_callback?code={authCode}", true);
+        }
+    }
+
+    private string GenerateCode()
+    {
+        var random = new Random();
+        return random.Next(100000, 999999).ToString();
+    }
+
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+}
+
